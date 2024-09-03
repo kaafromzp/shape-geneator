@@ -1,10 +1,9 @@
 import React from 'react';
 import useStore from 'store/index';
 import ArcSegment from './ArcSegment';
-import { CircleGeometry, MeshBasicMaterial, Vector2 } from 'three';
 import LinearSegment from './LinearSegment';
 import MoveSegment from './MoveSegment';
-export const v = new Vector2();
+import QuadraticBezierCurveSegment from './QuadraticBezierCurveSegment';
 
 type IProps = {
   index: number
@@ -19,6 +18,8 @@ export default function Segment( { index }: IProps ) {
       return <LinearSegment index= { index }/>;
     case 'arc':
       return <ArcSegment index= { index }/>;
+    case 'qBezier':
+      return <QuadraticBezierCurveSegment index= { index }/>;
     default:
       console.warn( `Type ${ type } is not defined` );
 

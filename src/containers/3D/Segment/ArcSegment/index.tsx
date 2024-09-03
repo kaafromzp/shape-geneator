@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import useStore from 'store/index';
-import { BufferGeometry, Path, Vector2 } from 'three';
+import { Vector2 } from 'three';
 import { IArcSegment, ILinearSegment, IVector2 } from 'types/index';
-import { v } from '..';
-import { circleGeometry } from 'helpers/geometry';
-import { materialCurveUnselected, materialPointUnselected } from 'helpers/material';
 import Point from 'containers/3D/Point';
+import LineCurve from 'containers/3D/LineCurve';
+import ArcCurve from 'containers/3D/ArcCurve';
+import { v } from 'helpers/vectors';
 
 type IProps = {
   index: number
@@ -17,6 +17,7 @@ export default function ArcSegment( { index }: IProps ) {
     switch ( type ) {
       case 'linear':
       case 'move':
+      case 'qBezier':
         const to = ( state.segments[ index - 1 ] as ILinearSegment ).to;
 
         return { x: to.x, y: to.y };
@@ -56,85 +57,20 @@ export default function ArcSegment( { index }: IProps ) {
     radius
   ] );
 
-  const pointTo = useMemo( () => {
-    v.set( center.x, center.y )
-      .add(
-        new Vector2( Math.cos( angleTo ), Math.sin( angleTo ) )
-          .multiplyScalar( radius )
-      );
-
-    return { x: v.x, y: v.y };
-  }, [
-    center,
-    angleTo,
-    radius
-  ] );
-
-  const path = useMemo( () => (
-    new Path()
-      .absarc( center.x, center.y, radius, angleFrom, angleTo, true )
-  ), [
-    center,
-    radius,
-    angleFrom,
-    angleTo
-  ] );
-
-  const geometry = useMemo( () => (
-    new BufferGeometry().setFromPoints( path.getPoints( 10 ) )
-  ), [path] );
-
-  const linePath = useMemo( () => (
-    new Path()
-      .moveTo( from.x, from.y )
-      .lineTo( pointFrom.x, pointFrom.y )
-  ), [
-    from.x,
-    from.y,
-    pointFrom.x,
-    pointFrom.y
-  ] );
-
-  const lineGeometry = useMemo( () => (
-    new BufferGeometry().setFromPoints( linePath.getPoints( 10 ) )
-  ), [linePath] );
-
-
   return (
     <>
       <Point index={ index } pointType='center'/>
-      <lineSegments
-        name='curve'
-        geometry={ lineGeometry }
-        material={ materialCurveUnselected }
-      />
-      <mesh
-        position={ [
-          pointFrom.x,
-          pointFrom.y,
-          0
-        ] }
-        name='from'
-        geometry={ circleGeometry }
-        material={ materialPointUnselected }
-      />
-      <mesh
-        position={ [
-          pointTo.x,
-          pointTo.y,
-          0
-        ] }
-        name='to'
-        geometry={ circleGeometry }
-        material={ materialPointUnselected }
-      />
-      <lineSegments
-        name='curve'
-        geometry={ geometry }
-        material={ materialCurveUnselected }
-      />
+      {
+        ( Math.abs( from.x - pointFrom.x ) > 1e-3 || Math.abs( from.y - pointFrom.y ) > 1e-3 ) && (
+          <>
+            <Point index={ index } pointType= 'from' />
+            <LineCurve from={ from } to={ pointFrom }/>
+          </>
+        )
+      }
+      <Point index={ index } pointType= 'to' />
+      <ArcCurve center={ center } radius={ radius } angleFrom={ angleFrom } angleTo={ angleTo }/>
     </>
-
   );
 
 }

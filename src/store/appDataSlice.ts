@@ -48,8 +48,8 @@ IObjects3DSliceStore
       { type: 'linear', to: { x: 1.5, y: 2 } },
       { type: 'linear', to: { x: 2, y: 0 } },
       { type: 'arc', center: { x: 1, y: 0 }, radius: 1, angleFrom: 0, angleTo: 3 * Math.PI / 2 },
+      { type: 'qBezier', to: { x: -5, y: -5 }, helperPoint1: { x: -3, y: 4 } },
       { type: 'linear', to: { x: -2, y: 0 } }
-
     ],
     mode: Mode.View,
     selectedIndex: null,

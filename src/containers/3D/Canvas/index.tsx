@@ -17,6 +17,7 @@ const Canvas: FC<PropsWithChildren> = ( { children } ) => {
     root.configure( {
       events,
       raycaster: { layers: layersRaycast },
+      frameloop: 'demand',
       orthographic: true,
       camera: {
         position: [

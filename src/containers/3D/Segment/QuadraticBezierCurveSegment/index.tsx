@@ -1,16 +1,16 @@
 import React from 'react';
 import useStore from 'store/index';
 import { Vector2 } from 'three';
-import { IArcSegment, ILinearSegment, IVector2 } from 'types/index';
+import { IArcSegment, ILinearSegment, IQBezierSegment, IVector2 } from 'types/index';
 import Point from 'containers/3D/Point';
-import LineCurve from 'containers/3D/LineCurve';
 import { v } from 'helpers/vectors';
+import QuadraticBezierCurve from 'containers/3D/QuadraticBezierCurve';
 
 type IProps = {
   index: number
 }
 
-export default function LinearSegment( { index }: IProps ) {
+export default function QuadraticBezierCurveSegment( { index }: IProps ) {
   const from: IVector2 = useStore( ( state ) => {
     const { type } = state.segments[ index - 1 ];
     switch ( type ) {
@@ -37,12 +37,25 @@ export default function LinearSegment( { index }: IProps ) {
         return { x: 0, y: 0 };
     }
   } );
-  const to = useStore( ( state ) => ( ( state.segments[ index ] as ILinearSegment ).to ) );
+
+  const to = useStore( ( state ) => ( ( state.segments[ index ] as IQBezierSegment ).to ) );
+  const helperPoint1 = useStore( ( state ) => ( ( state.segments[ index ] as IQBezierSegment ).helperPoint1 ) );
 
   return (
     <>
-      <Point index={ index } pointType='to'/>
-      <LineCurve from={ from } to={ to }/>
+      <Point
+        index={ index }
+        pointType='helperPoint1'
+      />
+      <Point
+        index={ index }
+        pointType='to'
+      />
+      <QuadraticBezierCurve
+        from={ from }
+        helperPoint1={ helperPoint1 }
+        to={ to }
+      />
     </>
   );
 }

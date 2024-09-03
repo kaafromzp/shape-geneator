@@ -37,6 +37,6 @@ export type IQBezierSegment = {
 
 export type ISegment = IMoveSegment | ILinearSegment | IArcSegment | IQBezierSegment
 
-export type selectedObjectType = 'to' | 'helperPoint1' | 'center' | 'from'
-
 export type pointType = 'to' | 'center' | 'from' | 'helperPoint1'
+
+export type selectedObjectType = pointType

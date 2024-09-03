@@ -12,7 +12,8 @@ import {
 } from 'three';
 import { layersRaycast } from 'helpers/layers';
 import useStore from 'store/index';
-
+import { pointType } from 'types/index';
+import { findCircleAngleNearestToGivenPoint } from 'helpers/vectors';
 
 export default function Plane() {
   const materialRef = useRef<MeshBasicMaterial>( null );
@@ -49,7 +50,24 @@ export default function Plane() {
   const onPointerMove = useCallback( ( e: ThreeEvent<PointerEvent> ) => {
     // console.log( 'plane move', draggedIndex, draggedType, e.unprojectedPoint );
     if ( draggedIndex !== null && draggedType !== null ) {
-      updateSegment( draggedIndex, { [ draggedType ]: { x: Math.round( e.unprojectedPoint.x * 10 ) * 0.1, y: Math.round( e.unprojectedPoint.y * 10 ) * 0.1 } } );
+      const segment = useStore.getState().segments[ draggedIndex ];
+      const unprojectedPoint = e.unprojectedPoint.clone();
+      if ( segment.type === 'arc' && ( ['from', 'to'] as pointType[] ).includes( draggedType ) ) {
+        const angle = findCircleAngleNearestToGivenPoint(
+          new Vector2( unprojectedPoint.x, unprojectedPoint.y ),
+          new Vector2( segment.center.x, segment.center.y ),
+          segment.radius
+        );
+
+        return updateSegment( draggedIndex, draggedType === 'to' ? { angleTo: angle } : { angleFrom: angle } );
+      }
+
+      // rounding - connect to store switch
+      unprojectedPoint.x = Math.round( unprojectedPoint.x * 10 ) * 0.1;
+      unprojectedPoint.y = Math.round( unprojectedPoint.y * 10 ) * 0.1;
+
+      // dispatching result
+      updateSegment( draggedIndex, { [ draggedType ]: { x: unprojectedPoint.x, y: unprojectedPoint.y } } );
     }
   }, [
     draggedIndex,
