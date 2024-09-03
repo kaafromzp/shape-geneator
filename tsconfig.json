@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "allowJs": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": false,
+    "lib": [
+      "webworker",
+      "dom",
+      "dom.iterable"
+    ],
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "baseUrl": "src/",
+    "experimentalDecorators": true,
+    "paths": {
+      "components/*": ["components/*"],
+      "helpers/*": ["helpers/*"],
+      "hooks/*": ["hooks/*"],
+      "providers/*": ["providers/*"],
+      "services/*": ["services/*"],
+      "store/*": ["store/*"],
+      "store": ["store/index.ts"],
+      "types/*": ["types/*"],
+      "UI/*": ["components/UI/*"],
+      "3D": ["components/3D/*"],
+    }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

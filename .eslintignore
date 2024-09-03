@@ -1,0 +1,7 @@
+node_modules/
+gitpush.sh~
+/.babelrc~
+.vscode
+.idea
+*[0-9].sbs
+.history

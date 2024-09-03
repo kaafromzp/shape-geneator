@@ -1,0 +1,8 @@
+.ui {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 1;
+}
