@@ -5,6 +5,7 @@ import {
   CanvasTexture,
   ImageBitmapLoader,
   MeshBasicMaterial,
+  NearestFilter,
   RepeatWrapping,
   RGBAFormat,
   SRGBColorSpace,
@@ -17,9 +18,11 @@ import { findCircleAngleNearestToGivenPoint } from 'helpers/vectors';
 
 export default function Plane() {
   const materialRef = useRef<MeshBasicMaterial>( null );
-  const imageBitmap = useLoader( ImageBitmapLoader, '/assets/textures/grid-texture.jpg', ( loader ) => {
+  const imageBitmap = useLoader( ImageBitmapLoader, '/assets/textures/grid.png', ( loader ) => {
     loader.setOptions( { imageOrientation: 'flipY' } );
   } );
+
+  const grid = useStore( ( state ) => state.grid );
 
   const texture = useMemo( () => {
     const texture = new CanvasTexture( imageBitmap );
@@ -29,7 +32,9 @@ export default function Plane() {
     texture.format = RGBAFormat;
     texture.wrapS = RepeatWrapping;
     texture.wrapT = RepeatWrapping;
-    texture.repeat = new Vector2( 100, 100 );
+    texture.minFilter = NearestFilter;
+    texture.magFilter = NearestFilter;
+    texture.repeat = new Vector2( 25 / grid, 25 / grid );
     texture.flipY = false;
     texture.needsUpdate = true;
     if ( materialRef.current ) {
@@ -40,7 +45,7 @@ export default function Plane() {
 
     return texture;
 
-  }, [imageBitmap] );
+  }, [imageBitmap, grid] );
 
   const updateSegment = useStore( ( state ) => ( state.updateSegment ) );
   const setDraggedSegment = useStore( ( state ) => ( state.setDraggedSegment ) );
@@ -48,23 +53,23 @@ export default function Plane() {
   const draggedIndex = useStore( ( state ) => ( state.draggedIndex ) );
   const draggedType = useStore( ( state ) => ( state.draggedType ) );
   const onPointerMove = useCallback( ( e: ThreeEvent<PointerEvent> ) => {
-    // console.log( 'plane move', draggedIndex, draggedType, e.unprojectedPoint );
     if ( draggedIndex !== null && draggedType !== null ) {
-      const segment = useStore.getState().segments[ draggedIndex ];
-      const unprojectedPoint = e.unprojectedPoint.clone();
+      const store = useStore.getState();
+      const segment = store.segments[ draggedIndex ];
+      const unprojectedPoint = e.point.clone();
       if ( segment.type === 'arc' && ( ['from', 'to'] as pointType[] ).includes( draggedType ) ) {
-        const angle = findCircleAngleNearestToGivenPoint(
+        const angle = Math.round( 180 / Math.PI * findCircleAngleNearestToGivenPoint(
           new Vector2( unprojectedPoint.x, unprojectedPoint.y ),
           new Vector2( segment.center.x, segment.center.y ),
           segment.radius
-        );
+        ) * ( 1 / store.snapAngle ) ) * store.snapAngle * Math.PI / 180;
 
         return updateSegment( draggedIndex, draggedType === 'to' ? { angleTo: angle } : { angleFrom: angle } );
       }
 
       // rounding - connect to store switch
-      unprojectedPoint.x = Math.round( unprojectedPoint.x * 10 ) * 0.1;
-      unprojectedPoint.y = Math.round( unprojectedPoint.y * 10 ) * 0.1;
+      unprojectedPoint.x = Math.round( unprojectedPoint.x * ( 1 / store.snapGrid ) ) * store.snapGrid;
+      unprojectedPoint.y = Math.round( unprojectedPoint.y * ( 1 / store.snapGrid ) ) * store.snapGrid;
 
       // dispatching result
       updateSegment( draggedIndex, { [ draggedType ]: { x: unprojectedPoint.x, y: unprojectedPoint.y } } );
@@ -89,7 +94,7 @@ export default function Plane() {
       position={ [
         0,
         0,
-        -1
+        -0.01
       ] }
       layers={ layersRaycast }
       onPointerMove={ onPointerMove }
@@ -97,7 +102,7 @@ export default function Plane() {
       onPointerUp={ onPointerUp }
       geometry = { planeGeometry }
     >
-      <meshBasicMaterial transparent opacity={ 0.2 } map={ texture } ref={ materialRef }/>
+      <meshBasicMaterial transparent opacity={ 0.4 } map={ texture } ref={ materialRef }/>
     </mesh>
   );
 }

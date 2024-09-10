@@ -9,6 +9,10 @@ body {
 
 :root {
   --side-menu-width: 420px;
+  -webkit-user-select: none;
+  user-select: none;
+  overflow: hidden;
+  flex-wrap: nowrap;
 }
 
 *, *::after, *::before {

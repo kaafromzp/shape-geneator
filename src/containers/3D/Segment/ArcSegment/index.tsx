@@ -3,7 +3,7 @@ import useStore from 'store/index';
 import { Vector2 } from 'three';
 import { IArcSegment, ILinearSegment, IVector2 } from 'types/index';
 import Point from 'containers/3D/Point';
-import LineCurve from 'containers/3D/LineCurve';
+import LineCurve from '../../../../containers/3D/LineCurve';
 import ArcCurve from 'containers/3D/ArcCurve';
 import { v } from 'helpers/vectors';
 
@@ -42,6 +42,7 @@ export default function ArcSegment( { index }: IProps ) {
   const angleFrom = useStore( ( state ) => ( ( state.segments[ index ] as IArcSegment ).angleFrom ) );
   const angleTo = useStore( ( state ) => ( ( state.segments[ index ] as IArcSegment ).angleTo ) );
   const radius = useStore( ( state ) => ( ( state.segments[ index ] as IArcSegment ).radius ) );
+  const clockwise = useStore( ( state ) => ( ( state.segments[ index ] as IArcSegment ).clockwise ) );
 
   const pointFrom = useMemo( () => {
     v.set( center.x, center.y )
@@ -69,7 +70,13 @@ export default function ArcSegment( { index }: IProps ) {
         )
       }
       <Point index={ index } pointType= 'to' />
-      <ArcCurve center={ center } radius={ radius } angleFrom={ angleFrom } angleTo={ angleTo }/>
+      <ArcCurve
+        center={ center }
+        radius={ radius }
+        angleFrom={ angleFrom }
+        angleTo={ angleTo }
+        clockwise={ clockwise }
+      />
     </>
   );
 

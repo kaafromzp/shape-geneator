@@ -3,7 +3,7 @@ import useStore from 'store/index';
 import { Vector2 } from 'three';
 import { IArcSegment, ILinearSegment, IVector2 } from 'types/index';
 import Point from 'containers/3D/Point';
-import LineCurve from 'containers/3D/LineCurve';
+import LineCurve from '../../../../containers/3D/LineCurve';
 import { v } from 'helpers/vectors';
 
 type IProps = {

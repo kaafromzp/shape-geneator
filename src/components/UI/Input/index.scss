@@ -1,0 +1,80 @@
+.input-field {
+
+  display: flex;
+  align-items: center;
+
+  &__label, &__message, &__input {
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-base);
+    color: var(--secondary-color);
+  }
+
+  &__container {
+    width: 100%;
+    max-width: 70px;
+    position: relative;
+    flex: 1;
+    margin-left: 5px;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+  }
+
+  &__input {
+    width: 100%;
+    // padding-block: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+
+    // padding-right: 28px;
+    // padding-left: 10px;
+    border-radius: 5px;
+    border: none;
+    transition: box-shadow 0.3s ease-in-out;
+
+    &--arrow-box {
+      position: absolute;
+      // right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5px;
+    }
+
+    &--up-arrow, &--down-arrow {
+      width: 12px;
+      height: 6px;
+      background-color: var(--main-color);
+    }
+
+    &--up-arrow {
+      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    }
+
+    &--down-arrow {
+        clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+    }
+
+    &--border {
+      border: 1px solid var(--secondary-color);
+      padding-left: 6px;
+    }
+
+    &:focus {
+      box-shadow: 0 3px 3px 0 rgba(135, 119, 81, 0.30);
+      outline: none;
+    }
+
+    //
+    //&:focus:not(:focus-visible) {
+    //  box-shadow: none;
+    //}
+  }
+
+  &__message {
+    font-size: var(--font-size-small);
+  }
+}

@@ -7,15 +7,17 @@ type IProps = {
   center: IVector2,
   radius: number,
   angleFrom: number,
-  angleTo: number
+  angleTo: number,
+  clockwise?: boolean
 }
 
-export default function Arc( { center, radius, angleFrom, angleTo }: IProps ) {
+export default function Arc( { center, radius, angleFrom, angleTo, clockwise = false }: IProps ) {
   const points = useMemo( () => (
     new Path()
-      .absarc( center.x, center.y, radius, angleFrom, angleTo, true )
+      .absarc( center.x, center.y, radius, angleFrom, angleTo, clockwise )
       .getPoints()
   ), [
+    clockwise,
     center.x,
     center.y,
     radius,

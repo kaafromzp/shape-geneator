@@ -6,5 +6,7 @@ type IProps = {
 }
 
 export default function MoveSegment( { index }: IProps ) {
-  return <Point index={ index } pointType='to'/>;
+  return (
+    <Point index={ index } pointType='to'/>
+  );
 }

@@ -26,6 +26,7 @@ export type IArcSegment = {
   center: IVector2;
   angleFrom: number;
   angleTo: number;
+  clockwise: boolean;
 }
 
 export type IQBezierSegment = {
