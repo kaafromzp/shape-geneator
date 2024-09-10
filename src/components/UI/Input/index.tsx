@@ -46,7 +46,7 @@ const Input = (
                 ) }
                 type={ type }
                 required={ required }
-                value={ value }
+                value={ type === 'number' ? Math.round( value as number * 1e6 ) * 1e-6 : value }
               />
               {/* {
                 ( type === 'number' ) && <div className='input-field__input--arrow-box'>
