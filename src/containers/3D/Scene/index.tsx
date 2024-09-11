@@ -7,7 +7,6 @@ import Plane from '../Plane';
 import R3FStoreProvider from 'components/UI/R3FStoreProvider';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { extend, Object3DNode, useThree } from '@react-three/fiber';
-import { Mesh } from 'three';
 
 extend( { OrbitControls } );
 declare global {
@@ -30,7 +29,8 @@ export default function Scene() {
   const camera = useThree( ( state ) => state.camera );
   const domElement = useThree( ( state ) => state.gl.domElement );
   const set = useThree( ( state ) => state.set );
-
+  // @ts-ignore
+  window.camera = camera;
   useEffect( () => {
     set( { controls: ref.current as OrbitControls } );
   }, [set] );
@@ -45,7 +45,7 @@ export default function Scene() {
   return (
     <>
       <R3FStoreProvider/>
-      <orbitControls ref={ ref } args={ [camera, domElement] } enableRotate={ false } />
+      <orbitControls maxZoom={ 15 } minZoom = { 0.2 }ref={ ref } args={ [camera, domElement] } enableRotate={ false } />
       <Plane/>
       <group
         name='bBoxBase'
