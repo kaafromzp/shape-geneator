@@ -7,6 +7,8 @@ import { RootState } from '@react-three/fiber';
 import { Box3, Group, OrthographicCamera, Vector3 } from 'three';
 import { fitImgToSpace } from 'containers/3D/Camera';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { handleUndoRedo } from 'helpers/handleUndoRedo';
+import { UndoRedoModes } from './createUndoRedoSlice';
 
 export type IAppDataSliceState = {
   grid: 0.01 | 0.1 | 1
@@ -30,6 +32,7 @@ export type IAppDataSliceActions = {
   fitSceneToCameraFrustum: ( ) => void
   updateSegment: ( index: number, changes: Partial<ISegment> ) => void
   addSegment: ( index: number, changes: ISegment ) => void
+  setSegment: ( index: number, changes: ISegment ) => void
   removeSegment: ( index: number ) => void
 }
 
@@ -91,34 +94,116 @@ IObjects3DSliceStore
       ( controls as OrbitControls ).target.set( center.x, center.y, 0 );
       ( controls as OrbitControls ).update();
     },
-    setGrid: ( grid ) => {
-      set( { grid } );
-    },
-    setSnapGrid: ( snapGrid ) => {
-      set( { snapGrid } );
-    },
-    setSnapAngle: ( snapAngle ) => {
-      set( { snapAngle } );
-    },
-    setSelectedSegment: ( index, type ) => {
-      set( { selectedIndex: index, selectedType: type } );
-    },
-    setDraggedSegment: ( index, type ) => {
-      set( { draggedIndex: index, draggedType: type } );
-    },
-    updateSegment: ( index, changes ) => {
+    setGrid: ( grid, undoRedoMode = UndoRedoModes.DEFAULT ) => {
       set( produce( ( state: IState ) => {
-        const object3D = state.segments[ index ];
-        Object.assign( object3D, changes );
+        const prevGrid = state.grid;
+        handleUndoRedo(
+          { commands: ['setGrid'], args: [[prevGrid]] },
+          state,
+          undoRedoMode
+        );
+        state.grid = grid;
       } ) );
     },
-    addSegment: ( index, changes ) => {
+    setSnapGrid: ( snapGrid, undoRedoMode = UndoRedoModes.DEFAULT ) => {
       set( produce( ( state: IState ) => {
+        const prevSnapGrid = state.snapGrid;
+        handleUndoRedo(
+          { commands: ['setSnapGrid'], args: [[prevSnapGrid]] },
+          state,
+          undoRedoMode
+        );
+        state.snapGrid = snapGrid;
+      } ) );
+    },
+    setSnapAngle: ( snapAngle, undoRedoMode = UndoRedoModes.DEFAULT ) => {
+      set( produce( ( state: IState ) => {
+        const prevAngle = state.snapAngle;
+        handleUndoRedo(
+          { commands: ['setSnapAngle'], args: [[prevAngle]] },
+          state,
+          undoRedoMode
+        );
+        state.snapAngle = snapAngle;
+      } ) );
+    },
+    setSelectedSegment: ( index, type, undoRedoMode = UndoRedoModes.DEFAULT ) => {
+      set( produce( ( state: IState ) => {
+        // const selectedIndex = state.selectedIndex;
+        // const selectedType = state.selectedType;
+
+        // handleUndoRedo(
+        //   { commands: ['setSelectedSegment'], args: [[selectedIndex, selectedType]] },
+        //   state,
+        //   undoRedoMode
+        // );
+
+        state.selectedIndex = index;
+        state.selectedType = type;
+      } ) );
+    },
+    setDraggedSegment: ( index, type, undoRedoMode = UndoRedoModes.DEFAULT ) => {
+      set( produce( ( state: IState ) => {
+        const draggedIndex = state.draggedIndex;
+        const draggedType = state.draggedType;
+
+        handleUndoRedo(
+          { commands: ['setDraggedSegment'], args: [[draggedIndex, draggedType]] },
+          state,
+          undoRedoMode
+        );
+
+        state.draggedIndex = index;
+        state.draggedType = type;
+      } ) );
+    },
+    setSegment: ( index, changes, undoRedoMode = UndoRedoModes.DEFAULT ) => {
+      set( produce( ( state: IState ) => {
+        const segment = state.segments[ index ];
+
+        handleUndoRedo(
+          { commands: ['setSegment'], args: [[index, { ...segment }]] },
+          state,
+          undoRedoMode
+        );
+        state.segments[ index ] = changes;
+      } ) );
+    },
+    updateSegment: ( index, changes, undoRedoMode = UndoRedoModes.DEFAULT ) => {
+      set( produce( ( state: IState ) => {
+        const segment = state.segments[ index ];
+
+        handleUndoRedo(
+          { commands: ['setSegment'], args: [[index, { ...segment }]] },
+          state,
+          undoRedoMode
+        );
+
+        Object.assign( segment, changes );
+      } ) );
+    },
+    addSegment: ( index, changes, undoRedoMode = UndoRedoModes.DEFAULT ) => {
+      set( produce( ( state: IState ) => {
+
+        handleUndoRedo(
+          { commands: ['removeSegment'], args: [[index + 1]] },
+          state,
+          undoRedoMode
+        );
+
         state.segments.splice( index + 1, 0, changes );
       } ) );
     },
-    removeSegment: ( index ) => {
+    removeSegment: ( index, undoRedoMode = UndoRedoModes.DEFAULT ) => {
       set( produce( ( state: IState ) => {
+        const segment = { ...state.segments[ index ] };
+
+        handleUndoRedo(
+          { commands: ['addSegment'], args: [[index - 1, segment]] },
+          state,
+          undoRedoMode
+        );
+
         state.segments.splice( index, 1 );
       } ) );
     }

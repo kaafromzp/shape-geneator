@@ -52,6 +52,7 @@ export default function Point( { index, pointType }: IProps ) {
 
     return materialPointUnselected;
   } );
+  const beginUndoGroup = useStore( ( state ) => ( state.beginUndoGroup ) );
   const setSelectedSegment = useStore( ( state ) => ( state.setSelectedSegment ) );
   const setDraggedSegment = useStore( ( state ) => ( state.setDraggedSegment ) );
   const selectedIndex = useStore( ( state ) => ( state.selectedIndex ) );
@@ -82,9 +83,11 @@ export default function Point( { index, pointType }: IProps ) {
   ] );
 
   const onPointerDown = useCallback( ( e: ThreeEvent<PointerEvent> ) => {
+    beginUndoGroup();
     setDraggedSegment( index, pointType );
     e.stopPropagation();
   }, [
+    beginUndoGroup,
     setDraggedSegment,
     index,
     pointType

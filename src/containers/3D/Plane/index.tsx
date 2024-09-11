@@ -47,6 +47,7 @@ export default function Plane() {
 
   }, [imageBitmap, grid] );
 
+  const endUndoGroup = useStore( ( state ) => ( state.endUndoGroup ) );
   const updateSegment = useStore( ( state ) => ( state.updateSegment ) );
   const setDraggedSegment = useStore( ( state ) => ( state.setDraggedSegment ) );
   const setSelectedSegment = useStore( ( state ) => ( state.setSelectedSegment ) );
@@ -81,13 +82,21 @@ export default function Plane() {
   ] );
 
   const onPointerDown = useCallback( () => {
-    setDraggedSegment( null, null );
-    setSelectedSegment( null, null );
+    const draggedIndex = useStore.getState().draggedIndex;
+
+    if ( draggedIndex !== null ) {
+      setDraggedSegment( null, null );
+      setSelectedSegment( null, null );
+    }
   }, [setDraggedSegment, setSelectedSegment] );
 
   const onPointerUp = useCallback( ( ) => {
-    setDraggedSegment( null, null );
-  }, [setDraggedSegment] );
+    const draggedIndex = useStore.getState().draggedIndex;
+    if ( draggedIndex !== null ) {
+      setDraggedSegment( null, null );
+      endUndoGroup();
+    }
+  }, [setDraggedSegment, endUndoGroup] );
 
   return (
     <mesh

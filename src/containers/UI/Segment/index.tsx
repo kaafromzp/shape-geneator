@@ -14,6 +14,7 @@ type IProps = {
 export default function Segment( { index }: IProps ) {
   const addSegment = useStore( ( ( state ) => state.addSegment ) );
   const removeSegment = useStore( ( ( state ) => state.removeSegment ) );
+  const segment = useStore( ( ( state ) => state.segments[ index ] ) );
 
   const handleAddLineSegment = useCallback( ( index: number ) => ( ) => {
     const currentPoint = getCurrentPoint( index );
@@ -68,12 +69,17 @@ export default function Segment( { index }: IProps ) {
     removeSegment( index );
   }, [index, removeSegment] );
 
-  const buttonRemove = useMemo( () => (
-    <div style={ { width: '30px', height: '20px' } }>
-      <Button text='x' onClick={ handleRemoveSegment }/>
-    </div>
+  const buttonRemove = useMemo( () => {
+    if ( segment.type === 'move' ) {
+      return null;
+    }
 
-  ), [handleRemoveSegment] );
+    return (
+      <div style={ { width: '30px', height: '20px' } }>
+        <Button text='x' onClick={ handleRemoveSegment }/>
+      </div>
+    );
+  }, [handleRemoveSegment, segment.type] );
 
   const component = useMemo( () => {
     switch ( type ) {
