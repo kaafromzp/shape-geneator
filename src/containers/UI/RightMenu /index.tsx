@@ -1,9 +1,12 @@
 import React from 'react';
 import useStore from 'store/index';
 import Segment from '../Segment';
+import Checkbox from 'components/UI/Checkbox';
 
 function RightMenu() {
   const segments = useStore( ( state ) => state.segments );
+  const autoClose = useStore( ( state ) => state.autoClose );
+  const setAutoClose = useStore( ( state ) => state.setAutoClose );
 
   return (
     <div
@@ -33,6 +36,7 @@ function RightMenu() {
           {segments.map( ( segment, index ) => (
             <Segment key={ index } index={ index }/>
           ) )}
+          <Checkbox label='auto close' checked = { autoClose } handleChange = { setAutoClose }/>
         </div>
       </div>
     </div>

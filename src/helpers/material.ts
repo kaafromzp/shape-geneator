@@ -6,3 +6,5 @@ export const materialPointUnselected = new MeshBasicMaterial( { color: 'blue' } 
 export const materialPointSelected = new MeshBasicMaterial( { color: 'red' } );
 export const materialCurveUnselected = new MeshBasicMaterial( { color: 'grey' } );
 export const materialCurveSelected = new MeshBasicMaterial( { color: 'green' } );
+
+export const shapeMaterial = new MeshBasicMaterial( { color: 'magenta', transparent: true, opacity: 0.3 } );

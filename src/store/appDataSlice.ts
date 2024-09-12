@@ -11,6 +11,7 @@ import { handleUndoRedo } from 'helpers/handleUndoRedo';
 import { UndoRedoModes } from './createUndoRedoSlice';
 
 export type IAppDataSliceState = {
+  autoClose: boolean
   grid: 0.01 | 0.1 | 1
   snapGrid: 0 | 0.01 | 0.1 | 1
   snapAngle: 0 | 0.01 | 0.1 | 1
@@ -28,6 +29,7 @@ export type IAppDataSliceActions = {
   setGrid: ( grid: 0.01 | 0.1 | 1 )=>void
   setSnapGrid: ( snapGrid: 0 | 0.01 | 0.1 | 1 )=>void
   setSnapAngle: ( snapGrid: 0 | 0.01 | 0.1 | 1 )=>void
+  setAutoClose: ( autoClose: boolean )=>void
 
   fitSceneToCameraFrustum: ( ) => void
   updateSegment: ( index: number, changes: Partial<ISegment> ) => void
@@ -46,6 +48,7 @@ IObjects3DSliceStore
 > = ( set ) => {
 
   return {
+    autoClose: true,
     grid: 0.1,
     snapGrid: 0.1,
     snapAngle: 0.1,
@@ -55,7 +58,7 @@ IObjects3DSliceStore
       { type: 'linear', to: { x: 2, y: 0 } },
       { type: 'arc', center: { x: 1, y: 0 }, radius: 1, angleFrom: 0, angleTo: 3 * Math.PI / 2, clockwise: true },
       { type: 'qBezier', to: { x: -3, y: -3 }, helperPoint1: { x: -3, y: 4 } },
-      { type: 'linear', to: { x: -2, y: 0 } }
+      { type: 'linear', to: { x: -5, y: 3 } }
     ],
     mode: Mode.View,
     selectedIndex: null,
@@ -103,6 +106,17 @@ IObjects3DSliceStore
           undoRedoMode
         );
         state.grid = grid;
+      } ) );
+    },
+    setAutoClose: ( autoClose, undoRedoMode = UndoRedoModes.DEFAULT ) => {
+      set( produce( ( state: IState ) => {
+        const prevAutoClose = state.autoClose;
+        handleUndoRedo(
+          { commands: ['setAutoClose'], args: [[prevAutoClose]] },
+          state,
+          undoRedoMode
+        );
+        state.autoClose = autoClose;
       } ) );
     },
     setSnapGrid: ( snapGrid, undoRedoMode = UndoRedoModes.DEFAULT ) => {
