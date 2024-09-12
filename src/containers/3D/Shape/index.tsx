@@ -2,13 +2,14 @@ import React, { useMemo } from 'react';
 import useStore from 'store/index';
 import { ExtrudeGeometry, Shape as TShape } from 'three';
 import { shapeMaterial } from 'helpers/material';
+import getCurrentPoint from 'helpers/getCurrentPoint';
 
 
 export default function Shape() {
   const segments = useStore( ( state ) => state.segments );
-  // const autoClose = useStore( ( state ) => state.autoClose );
+  const autoClose = useStore( ( state ) => state.autoClose );
 
-  // const to = getCurrentPoint( 0 );
+  const to = getCurrentPoint( 0 );
   // const from: IVector2 = useStore( ( state ) => {
   //   const index = segments.length - 1;
   //   const { type } = state.segments[ index ];
@@ -58,8 +59,17 @@ export default function Shape() {
       }
     } );
 
+    if ( autoClose ) {
+      result.lineTo( to.x, to.y );
+    }
+
     return result;
-  }, [segments] );
+  }, [
+    segments,
+    autoClose,
+    to.x,
+    to.y
+  ] );
 
   const geometry = useMemo( () => new ExtrudeGeometry( shape, { bevelEnabled: false, depth: 0.01 } ), [shape] );
 
