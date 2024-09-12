@@ -1,9 +1,8 @@
 import Button from 'components/UI/Button';
-import { R3FRef } from 'components/UI/R3FStoreProvider';
 import Select, { IOption } from 'components/UI/Select';
+import { exportCode, saveString } from 'helpers/export';
 import React, { useCallback } from 'react';
 import useStore from 'store/index';
-import { OrbitControls } from 'three-stdlib';
 
 const gridOptions = [
   { value: 0.01, label: '0.01' },
@@ -26,6 +25,14 @@ function LeftMenu() {
   const snapAngle = useStore( ( ( state ) => state.snapAngle ) );
   const setSnapAngle = useStore( ( ( state ) => state.setSnapAngle ) );
   const fitSceneToCameraFrustum = useStore( ( ( state ) => state.fitSceneToCameraFrustum ) );
+  const handleExportCode = useCallback( () => {
+    const link = document.createElement( 'a' );
+    link.style.display = 'none';
+    document.body.appendChild( link );
+    const ord = exportCode(useStore.getState().segments);
+    saveString( link, ord, 'scene.txt' );
+    document.body.removeChild( link );
+  }, [] );
 
   return (
     <div style={ { position: 'fixed', left: '10px', top: '10px' } }>
@@ -50,6 +57,7 @@ function LeftMenu() {
           onValueChange={ ( option ) => setSnapAngle( option.value ) }
         />
         <Button text='Fit scene' onClick={ fitSceneToCameraFrustum }/>
+        <Button text='Export code' onClick={ handleExportCode }/>
       </div>
     </div>
   );
